@@ -2,7 +2,7 @@ package com.soundcloud.android.crop;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;

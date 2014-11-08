@@ -6,12 +6,12 @@ apply plugin: 'signing'
 archivesBaseName = 'android-crop'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.1.0'
+    compileSdkVersion 21
+    buildToolsVersion '21.1.0'
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 19
+        targetSdkVersion 21
 
         testApplicationId 'com.soundcloud.android.crop.test'
         testInstrumentationRunner 'android.test.InstrumentationTestRunner'
@@ -20,9 +20,33 @@ android {
 
 dependencies {
     androidTestCompile 'com.squareup:fest-android:1.0.7'
-    androidTestCompile 'com.android.support:support-v4:19.1.0'
+    androidTestCompile 'com.android.support:support-v4:21.0.0'
     androidTestCompile 'org.mockito:mockito-core:1.9.5'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.0'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.0'
+    compile 'com.android.support:support-v4:21.0.0'
+}
+
+android.libraryVariants.all { variant ->
+    task("generate${variant.name}Javadoc", type: Javadoc) {
+        description "Generates Javadoc for $variant.name."
+        source = variant.javaCompile.source
+        ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+        classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
+    }
+
+    task("javadoc${variant.name}", type: Jar) {
+        classifier = "javadoc"
+        description "Bundles Javadoc into a JAR file for $variant.name."
+        from tasks["generate${variant.name}Javadoc"]
+
+    }
+
+    task("jar${variant.name}", type: Jar) {
+        description "Bundles compiled .class files into a JAR file for $variant.name."
+        dependsOn variant.javaCompile
+        from variant.javaCompile.destinationDir
+        exclude '**/R.class', '**/R$*.class', '**/R.html', '**/R.*.html'
+    }
 }
 
